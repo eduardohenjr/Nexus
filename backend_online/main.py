@@ -34,7 +34,7 @@ class ContextRequest(BaseModel):
 async def check_api_key(request: Request, call_next):
     api_key = request.headers.get("x-api-key")
     if api_key != API_KEY:
-        return HTTPException(status_code=401, detail="API key inválida")
+        raise HTTPException(status_code=401, detail="API key inválida")
     return await call_next(request)
 
 

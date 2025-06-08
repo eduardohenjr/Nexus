@@ -21,10 +21,10 @@ function App() {
     const currentQuestion = question;
     setQuestion('');
     try {
-      const response = await fetch('http://localhost:8000/ask', {
+      const response = await fetch('https://nexus-19ri.onrender.com/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: currentQuestion })
+        body: JSON.stringify({ question: currentQuestion, user_id: 'frontend-user' })
       });
       const data = await response.json();
       setMessages((msgs) => [...msgs, { sender: 'bot', text: data.answer }]);

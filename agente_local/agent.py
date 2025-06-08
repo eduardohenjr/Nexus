@@ -5,7 +5,8 @@ import time
 import os
 
 # Configurações
-BACKEND_URL = os.environ.get("NEXUS_BACKEND_URL", "http://localhost:8000")
+BACKEND_URL = os.environ.get(
+    "NEXUS_BACKEND_URL", "https://nexus-19ri.onrender.com")
 API_KEY = os.environ.get("NEXUS_API_KEY", "minha-chave-secreta")
 USER_ID = os.environ.get("NEXUS_USER_ID", platform.node())
 INTERVAL = int(os.environ.get("NEXUS_UPDATE_INTERVAL", 300))  # segundos
