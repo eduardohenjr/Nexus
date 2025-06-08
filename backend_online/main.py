@@ -72,6 +72,6 @@ async def ask(req: AskRequest):
 
 
 @app.post("/update-context")
-async def update_context(req: ContextRequest, request: Request = Depends(verify_api_key)):
+async def update_context(req: ContextRequest, _: None = Depends(verify_api_key)):
     user_contexts[req.user_id] = req.context
     return {"status": "ok"}
