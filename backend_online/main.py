@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, HTTPException, Header
+from fastapi import FastAPI, Request, HTTPException, Header, Depends
 from pydantic import BaseModel
 from typing import Optional, Dict
 import requests
@@ -27,15 +27,11 @@ class ContextRequest(BaseModel):
     user_id: str
     context: str
 
-# Middleware simples de autenticação
 
-
-@app.middleware("http")
-async def check_api_key(request: Request, call_next):
+def verify_api_key(request: Request):
     api_key = request.headers.get("x-api-key")
     if api_key != API_KEY:
         raise HTTPException(status_code=401, detail="API key inválida")
-    return await call_next(request)
 
 
 @app.post("/ask")
@@ -76,6 +72,6 @@ async def ask(req: AskRequest):
 
 
 @app.post("/update-context")
-async def update_context(req: ContextRequest):
+async def update_context(req: ContextRequest, request: Request = Depends(verify_api_key)):
     user_contexts[req.user_id] = req.context
     return {"status": "ok"}
