@@ -3,8 +3,17 @@ from pydantic import BaseModel
 from typing import Optional, Dict
 import requests
 import os
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # ou restrinja para ["http://localhost:5173"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Armazenamento simples em memória (por usuário)
 user_contexts: Dict[str, str] = {}
@@ -75,3 +84,8 @@ async def ask(req: AskRequest):
 async def update_context(req: ContextRequest, _: None = Depends(verify_api_key)):
     user_contexts[req.user_id] = req.context
     return {"status": "ok"}
+
+
+@app.get("/")
+def root():
+    return {"message": "Nexus backend online. Use /ask (POST) para perguntas e /update-context (POST) para contexto do agente local."}

@@ -21,7 +21,7 @@ function App() {
     const currentQuestion = question;
     setQuestion('');
     try {
-      const response = await fetch('https://nexus-19ri.onrender.com/ask', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: currentQuestion, user_id: 'frontend-user' })
