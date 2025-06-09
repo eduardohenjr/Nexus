@@ -21,10 +21,10 @@ user_contexts: Dict[str, str] = {}
 # API Key para autenticação simples
 API_KEY = os.environ.get("NEXUS_API_KEY", "minha-chave-secreta")
 
-# Modelo LLM (exemplo usando OpenAI, pode adaptar para outro)
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
-OPENAI_URL = "https://api.openai.com/v1/chat/completions"
-OPENAI_MODEL = "gpt-3.5-turbo"
+# Configuração do LLM local (exemplo com Ollama)
+LLM_URL = os.environ.get(
+    "NEXUS_LLM_URL", "http://localhost:11434/api/generate")
+LLM_MODEL = os.environ.get("NEXUS_LLM_MODEL", "llama3")
 
 
 class AskRequest(BaseModel):
@@ -54,29 +54,19 @@ async def ask(req: AskRequest):
     if context:
         prompt += f"Contexto do usuário: {context}\n"
     prompt += f"Usuário: {req.question}\nNexus:"
-    # Exemplo com OpenAI (pode adaptar para outro LLM)
-    if not OPENAI_API_KEY:
-        return {"answer": "LLM não configurado no backend online."}
-    headers = {
-        "Authorization": f"Bearer {OPENAI_API_KEY}",
-        "Content-Type": "application/json"
-    }
     payload = {
-        "model": OPENAI_MODEL,
-        "messages": [
-            {"role": "system", "content": prompt}
-        ],
-        "max_tokens": 512,
-        "temperature": 0.2
+        "model": LLM_MODEL,
+        "prompt": prompt,
+        "stream": False
     }
     try:
-        resp = requests.post(OPENAI_URL, headers=headers,
-                             json=payload, timeout=60)
+        resp = requests.post(LLM_URL, json=payload, timeout=60)
         resp.raise_for_status()
         data = resp.json()
-        answer = data["choices"][0]["message"]["content"].strip()
+        answer = data.get(
+            "response", "Não foi possível obter resposta do modelo.")
     except Exception as e:
-        answer = f"Erro ao consultar o LLM: {e}"
+        answer = f"Erro ao consultar o modelo local: {e}"
     return {"answer": answer}
 
 
